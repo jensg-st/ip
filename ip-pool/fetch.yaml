@@ -1,0 +1,41 @@
+functions:
+- id: bash
+  image: gcr.io/direktiv/functions/bash:1.0
+  type: knative-workflow
+
+states:
+- id: get
+  type: getter
+  variables:
+  - key: pool.json
+    scope: namespace
+  transform: jq(.var."pool.json")
+  transition: check
+
+- id: check
+  type: switch
+  conditions:
+  - condition: 'jq((.ips | length) == 0)'
+    transition: no-ip
+  defaultTransition: fetch
+
+- id: fetch
+  type: noop
+  transform: 
+    ip: jq(.ips[0])
+    ips: 'jq(del(.ips[0]))'
+  transition: set
+
+- id: set
+  type: setter
+  variables:
+  - key: pool.json
+    scope: namespace
+    mimeType: application.json
+    value: 'jq(.ips)'
+  transform: jq(del(.ips))
+
+- id: no-ip
+  type: error
+  error: sdd
+  message: sds

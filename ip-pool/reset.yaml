@@ -1,0 +1,20 @@
+functions:
+- id: bash
+  image: gcr.io/direktiv/functions/bash:1.0
+  type: knative-workflow
+
+states:
+- id: get
+  type: getter
+  variables:
+  - key: template.json
+    scope: workflow
+  transition: setter
+
+- id: setter
+  type: setter
+  variables:
+  - key: pool.json
+    scope: namespace
+    mimeType: application.json
+    value: 'jq(.var."template.json")'
