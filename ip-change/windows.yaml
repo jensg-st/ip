@@ -1,0 +1,67 @@
+functions:
+- id: powershell
+  image: gcr.io/direktiv/functions/powershell:1.0
+  type: knative-workflow
+  size: large
+
+states:
+
+# validate that there is an old and a new IP
+- id: validate
+  type: validate
+  schema:
+    title: Change IP
+    type: object
+    required: ["old", "new"]
+    properties:
+      old:
+        type: string
+        title: Old IP
+      new:
+        type: string
+        title: New IP
+  transition: change
+
+# changes the IP from old to new
+# it fails automatically after 30 seconds 
+# because the connection is broken after changing the IP
+- id: change 
+  type: action
+  timeout: PT15S
+  action:
+    function: powershell
+    files:
+    - key: ip.ps1
+      scope: workflow
+    secrets: ["windowspwd"]
+    input: 
+      commands:
+      # command requires username and password as args
+      - command: pwsh ip.ps1 Administrator jq(.secrets.windowspwd) jq(.old) jq(.new)
+  catch: 
+  - error: "*"
+    transition: check-ip
+  transition: check-ip
+
+# checks the ip and fails the workflow if it can not ping it
+- id: check-ip
+  type: action
+  timeout: PT1M
+  action:
+    function: powershell
+    files:
+    - key: ping.ps1
+      scope: workflow
+    input: 
+      commands:
+      - command: pwsh ping.ps1 jq(.new)
+  catch: 
+  - error: "*"
+    transition: failed
+
+- id: failed
+  type: error
+  error: ip.change.failed
+  message: ip address could not be changed
+
+
