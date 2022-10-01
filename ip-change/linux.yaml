@@ -1,0 +1,119 @@
+functions:
+- id: ssh
+  image: gcr.io/direktiv/functions/ssh:1.0
+  type: knative-workflow
+
+states:
+
+# validate that there is an old and a new IP
+- id: validate
+  type: validate
+  schema:
+    title: Change IP
+    type: object
+    required: ["old", "new", "mask"]
+    properties:
+      old:
+        type: string
+        title: Old IP
+      new:
+        type: string
+        title: New IP
+      mask: 
+        type: string
+        title: Network Mask
+      gateway: 
+        type: string
+        title: Default Gateway
+  transition: uuid
+
+# changes the IP from old to new
+# it fails automatically after 30 seconds 
+# because the connection is broken after changing the IP
+- id: uuid 
+  type: action
+  timeout: PT15S
+  log: getting interface uuid
+  action:
+    function: ssh
+    secrets: ["sshpwd"]
+    input: 
+      host:
+        name: jq(.old)
+      auth:
+        username: direktiv
+        password: jq(.secrets.sshpwd)
+      commands:
+      - command: nmcli connection show | tail -1 | awk '"'"'{print $4}'"'"'"" 
+  transform:
+    uuid: jq(.return.ssh[0].result)
+    new: jq(.new)
+    old: jq(.old)
+    mask: jq(.mask)
+  transition: change
+  catch: 
+  - error: "*"
+    transition: failed
+
+
+# requires more permissions from polkit!
+# user needs to be in netdev group!
+# /etc/polkit-1/localauthority/90-mandatory.d/99-network.pkla
+# [Allow netdev users to modify all network states and settings]
+# Identity=unix-group:netdev
+# Action=org.freedesktop.NetworkManager.*
+# ResultAny=yes
+# ResultInactive=yes
+# ResultActive=yes
+- id: change
+  type: action
+  log: changing interface with uuid jq(.uuid)
+  # timeout because we will loose connection
+  timeout: PT15S
+  action:
+    function: ssh
+    secrets: ["sshpwd"]
+    input: 
+      host:
+        name: jq(.old)
+      auth:
+        username: direktiv
+        password: jq(.secrets.sshpwd)
+      commands:
+      - command: nmcli connection modify jq(.uuid) IPv4.address jq(.new)/jq(.mask)
+      # if router not set we just proceed
+      - command: nmcli connection modify $UUID IPv4.gateway $router
+        continue: true
+      - command: nmcli connection modify jq(.uuid) IPv4.method manual
+      - command: bash -c "nmcli connection down jq(.uuid) && nmcli connection up jq(.uuid)"
+  catch: 
+  - error: "*"
+    transition: check-ip
+  transition: check-ip
+
+# checks the ip and fails the workflow if it can not ping it
+- id: check-ip
+  type: action
+  timeout: PT1M
+  action:
+    function: ssh
+    secrets: ["sshpwd"]
+    input: 
+      host:
+        name: jq(.new)
+      auth:
+        username: direktiv
+        password: jq(.secrets.sshpwd)
+      commands:
+      - command: echo works
+  catch: 
+  - error: "*"
+    transition: failed
+  transform: jq(del(.error))
+
+- id: failed
+  type: error
+  error: ip.change.failed
+  message: ip address could not be changed
+
+
