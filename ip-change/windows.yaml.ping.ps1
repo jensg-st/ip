@@ -11,4 +11,4 @@ Write-Output "login in as $username, change from $old to $new"
 $pass = ConvertTo-SecureString $password -AsPlainText -Force
 $cred = New-Object System.Management.Automation.PSCredential -ArgumentList ($username,$pass)
 
-Invoke-Command -Authentication Negotiate -ComputerName $new -ScriptBlock ${ Get-Culture }  -credential $cred
+Invoke-Command -Authentication Negotiate -ComputerName $new -ScriptBlock { Get-Culture }  -credential $cred
