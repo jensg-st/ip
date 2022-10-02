@@ -69,7 +69,7 @@ states:
   type: action
   log: changing interface with uuid jq(.uuid)
   # timeout because we will loose connection
-  timeout: PT15S
+  timeout: PT1M
   action:
     function: ssh
     secrets: ["sshpwd"]
@@ -102,7 +102,7 @@ states:
       host:
         name: jq(.new)
       auth:
-        username: direktiv
+        username: test
         password: jq(.secrets.sshpwd)
       commands:
       - command: echo works
