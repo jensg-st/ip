@@ -52,8 +52,6 @@ states:
     time: jq(.time)
   transition: fetch-events
 
-  transition: fetch-events
-
 - id: fetch-events 
   type: action
   log: fetching move events after jq(.time)
