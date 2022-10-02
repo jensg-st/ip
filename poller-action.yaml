@@ -36,7 +36,7 @@ states:
     jq(.name as $f | .name | 
     if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
     elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
-    else { "name": $f, "os": "windows" } end  )
+    else { "name": $f, "os": "linux" } end  )
 #CHANGE!!!!
   
 # stop if OS is unknown
@@ -92,8 +92,13 @@ states:
 
 - id: change-ip-linux
   type: noop
-  log: Linux VM jq(.name) IP change
-
+  action:
+    function: linuxip
+    input:
+      old: jq(.ip)
+      new: jq(.new)
+      mask: 255.255.255.0
+      gateway: 10.32.130.1
 - id: change-ip-win
   type: action
   log: Windows VM jq(.name) IP change
