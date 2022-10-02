@@ -71,9 +71,9 @@ states:
           PaginationCriteria:
             PageNumber: 1
             RecordsPerPage: 100
-    transform:  
-      events: jq(.return.nutanix.Events)
-      time: jq(.time)
+  transform:  
+    events: jq(.return.nutanix.Events)
+    time: jq(.time)
  
 
 # .return.nutanix.Events.[] | select(.EndTime > 166396186044132100)
