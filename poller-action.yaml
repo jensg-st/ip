@@ -61,23 +61,18 @@ states:
         username: jq(.secrets.nutanixusr)
         skipVerify: true
       api:
-        # path: "/api/nutanix/v3/vms/list"
-        path: /PrismGateway/services/rest/v2.0/vms/
-        # method: POST
+        path: /PrismGateway/services/rest/v2.0/vms/filter=vm_name%3D%3Djq(.name)&include_vm_nic_config=true
         method: GET
-        body:
-          kind: vm
-          filter: vm_name==jq(.name)
-#   transform:
-#     ip: 'jq(.return.nutanix.entities[0].spec.resources.nic_list[0].ip_endpoint_list[0].ip)'
-#     name: jq(.name)
-#     os: jq(.os)
+  transform:
+    ip: 'jq(.return.nutanix.entities[0].vm_nics[0].ip_address)'
+    name: jq(.name)
+    os: jq(.os)
 #   transition: fetch-ip
 
 # # get new IP from list
 # - id: fetch-ip
 #   type: action
-#   action:
+#   action:vm_name
 #     function: fetchip
 #   transform: 'jq(. + { "new": .return.ip } | del(.return))'
 #   transition: win-or-linux
