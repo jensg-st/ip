@@ -45,7 +45,7 @@ states:
         method: POST
         body: 
           Spec:
-            UserName: admin
+            UserName: nutanix
             Password: jq(.secrets.movepwd)
   transform:
     token: jq(.return.nutanix.Status.Token)
