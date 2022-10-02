@@ -1,4 +1,99 @@
+functions:
+- id: nutanix
+  image: gcr.io/direktiv/functions/nutanix:1.0
+  type: knative-workflow
+- id: fetchip
+  workflow: ip-pool/fetch
+  type: subflow
+- id: linuxip
+  workflow: ip-change/linux
+  type: subflow
+- id: windowsip
+  workflow: ip-change/windows
+  type: subflow
+
 states:
+
+# check taht name is present
+- id: validate
+  type: validate
+  schema:
+    title: VM
+    type: object
+    required: ["name"]
+    properties:
+      file:
+        type: string
+        title: VM name
+  transition: get-ip
+
+check by naming convention what OS it is
 - id: print
   type: noop
-  log: jq(.)
+  log: checking vm jq(.name)
+  transition: check-valid
+  transform: |-
+    jq(.name as $f | .name | 
+    if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
+    elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
+    else { "name": $f, "os": "unkown" }   end  )
+  
+# stop if OS is unknown
+- id: check-valid
+  type: switch
+  log: 'check for os: jq(.os)'
+  conditions:
+  - condition: jq(if .os == "unkown" then true else false end)
+  defaultTransition: get-ip
+
+# fetch actual ip from API
+- id: get-ip
+  type: action
+  log: getting ip for vm jq(.name)
+  action:
+    function: nutanix
+    secrets: ["nutanixpwd", "nutanixsvr", "nutanixusr"]
+    input: 
+      auth:
+        host: jq(.secrets.nutanixsvr)
+        password: jq(.secrets.nutanixpwd)
+        username: jq(.secrets.nutanixusr)
+        skipVerify: true
+      api:
+        path: "/api/nutanix/v3/vms/list"
+        method: POST
+        body:
+          kind: vm
+          filter: vm_name==jq(.name)
+  transform:
+    ip: 'jq(.return.nutanix.entities[0].spec.resources.nic_list[0].ip_endpoint_list[0].ip)'
+    name: jq(.name)
+  transition: fetch-ip
+
+# get new IP from list
+- id: fetch-ip
+  type: action
+  action:
+    function: fetchip
+  transform: 'jq(. + { "new": .return.ip } | del(.return))'
+
+# route based on OS
+- id: win-or-linux
+  type: switch
+  conditions:
+  - condition: jq(if .os == "windows" then true else false end)
+    transition: change-ip-win
+  - condition: jq(if .os == "linux" then true else false end)
+    transition: change-ip-linux
+
+
+- id: change-ip-win
+  type: noop
+  log: Windows VM jq(.name) IP change
+
+- id: change-ip-linux
+  type: noop
+  log: Linux VM jq(.name) IP change
+
+
+
