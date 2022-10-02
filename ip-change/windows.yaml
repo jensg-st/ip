@@ -37,7 +37,7 @@ states:
     input: 
       commands:
       # command requires username and password as args
-      - command: pwsh ip.ps1 Test jq(.secrets.windowspwd) jq(.old) jq(.new) 10.32.130.1 24
+      - command: pwsh ip.ps1 Test jq(.secrets.windowspwd) jq(.old) jq(.new) 10.54.61.1 25
   catch: 
   - error: "*"
     transition: check-ip

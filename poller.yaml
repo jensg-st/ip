@@ -38,7 +38,7 @@ states:
     secrets: ["movepwd"]
     input: 
       auth:
-        host: https://10.32.160.40
+        host: https://10.54.61.37
         skipVerify: true
       api:
         path: "/move/v2/users/login"
@@ -59,7 +59,7 @@ states:
     function: nutanix
     input: 
       auth:
-        host: https://10.32.160.40
+        host: https://10.54.61.37
         skipVerify: true
         token: jq(.token)
       api:
