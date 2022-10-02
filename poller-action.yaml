@@ -22,12 +22,12 @@ states:
     type: object
     required: ["name"]
     properties:
-      file:
+      name:
         type: string
         title: VM name
   transition: get-ip
 
-check by naming convention what OS it is
+# check by naming convention what OS it is
 - id: print
   type: noop
   log: checking vm jq(.name)
@@ -51,7 +51,7 @@ check by naming convention what OS it is
   type: action
   log: getting ip for vm jq(.name)
   action:
-    function: nutanixv
+    function: nutanix
     secrets: ["nutanixpwd", "nutanixsvr", "nutanixusr"]
     input: 
       auth:
@@ -76,6 +76,7 @@ check by naming convention what OS it is
   action:
     function: fetchip
   transform: 'jq(. + { "new": .return.ip } | del(.return))'
+  transition: win-or-linux
 
 # route based on OS
 - id: win-or-linux
