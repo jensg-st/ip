@@ -52,6 +52,7 @@ states:
     files:
     - key: ping.ps1
       scope: workflow
+    secrets: ["windowspwd"]
     input: 
       commands:
       - command: pwsh ping.ps1 Administrator jq(.secrets.windowspwd) jq(.new)
