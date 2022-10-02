@@ -51,7 +51,7 @@ states:
 
 - id: fetch-events 
   type: action
-  log: fetching move events with token jq(.token)
+  log: fetching move events after jq(.time)
   action:
     function: nutanix
     input: 
@@ -73,7 +73,7 @@ states:
             RecordsPerPage: 100
   transform:  
     # get vms after our last check but only names in an array
-    events: jq([ .return.nutanix.Events.[] | select(.EndTime > .time) | .VmName ])
+    events: jq(.time as $filter | [ .return.nutanix.Events.[] | select(.EndTime > $filter) | .VmName ])
     time: jq(.time)
  
 
