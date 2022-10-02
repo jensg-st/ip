@@ -44,7 +44,7 @@ states:
   type: switch
   log: 'check for os: jq(.os)'
   conditions:
-  - condition: jq(if .os == "unkown" then true else false end)
+  - condition: jq(if .os == "unknown" then true else false end)
   defaultTransition: get-ip
 
 # fetch actual ip from API
