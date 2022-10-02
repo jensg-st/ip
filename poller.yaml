@@ -35,7 +35,7 @@ states:
   log: fetching move token
   action:
     function: nutanix
-    secrets: ["nutanixpwd"]
+    secrets: ["movepwd"]
     input: 
       auth:
         host: https://10.54.61.111
@@ -46,7 +46,7 @@ states:
         body: 
           Spec:
             UserName: admin
-            Password: jq(.secrets.nutanixpwd)
+            Password: jq(.secrets.movepwd)
   transform:
     token: jq(.return.nutanix.Status.Token)
     time: jq(.time)
