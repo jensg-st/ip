@@ -32,7 +32,7 @@ states:
 # because the connection is broken after changing the IP
 - id: uuid 
   type: action
-  timeout: PT15S
+  timeout: PT1M
   log: getting interface uuid
   action:
     function: ssh
