@@ -54,7 +54,7 @@ states:
       scope: workflow
     input: 
       commands:
-      - command: pwsh ping.ps1 jq(.new)
+      - command: pwsh ping.ps1 Administrator jq(.secrets.windowspwd) jq(.new)
   catch: 
   - error: "*"
     transition: failed

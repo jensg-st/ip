@@ -4,7 +4,7 @@
 
 $username = $args[0]
 $password = $args[1]
-$new = $args[1]
+$new = $args[2]
 
 Write-Output "login in as $username, change from $old to $new"
 
