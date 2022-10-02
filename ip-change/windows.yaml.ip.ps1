@@ -21,7 +21,7 @@ function Set-IP
 
 
     Set-NetIPInterface -InterfaceAlias $alias -Dhcp Disabled
-    Remove-NetIPAddress -InterfaceAlias $alias-Confirm:$false
+    Remove-NetIPAddress -InterfaceAlias $alias -Confirm:$false
     New-NetIPAddress -InterfaceAlias $alias -IPAddress $args[0] -AddressFamily IPv4 -DefaultGateway $args[1] -PrefixLength $args[2]
     Set-DnsClientServerAddress -InterfaceAlias $alias -serveraddresses 8.8.8.8
     
