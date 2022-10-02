@@ -34,10 +34,10 @@ states:
   transition: check-valid
   transform: |-
     jq(.name as $f | .name | 
-    if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
-    elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
-    else { "name": $f, "os": "linux" } end  )
-#CHANGE!!!!
+    if (index("Win_Dir_")) then { "name": $f, "os": "windows" } 
+    elif (index("Lin_Dir_")) then { "name": $f, "os": "linux" }   
+    else { "name": $f, "os": "unknown" } end  )
+
   
 # stop if OS is unknown
 - id: check-valid
@@ -56,58 +56,60 @@ states:
     secrets: ["nutanixpwd", "nutanixsvr", "nutanixusr"]
     input: 
       auth:
-        host: https://10.54.61.37
+        host: https://10.54.61.37:9440
         password: jq(.secrets.nutanixpwd)
         username: jq(.secrets.nutanixusr)
         skipVerify: true
       api:
-        path: "/api/nutanix/v3/vms/list"
-        method: POST
+        # path: "/api/nutanix/v3/vms/list"
+        path: /PrismGateway/services/rest/v2.0/vms/
+        # method: POST
+        method: GET
         body:
           kind: vm
           filter: vm_name==jq(.name)
-  transform:
-    ip: 'jq(.return.nutanix.entities[0].spec.resources.nic_list[0].ip_endpoint_list[0].ip)'
-    name: jq(.name)
-    os: jq(.os)
-  transition: fetch-ip
+#   transform:
+#     ip: 'jq(.return.nutanix.entities[0].spec.resources.nic_list[0].ip_endpoint_list[0].ip)'
+#     name: jq(.name)
+#     os: jq(.os)
+#   transition: fetch-ip
 
-# get new IP from list
-- id: fetch-ip
-  type: action
-  action:
-    function: fetchip
-  transform: 'jq(. + { "new": .return.ip } | del(.return))'
-  transition: win-or-linux
+# # get new IP from list
+# - id: fetch-ip
+#   type: action
+#   action:
+#     function: fetchip
+#   transform: 'jq(. + { "new": .return.ip } | del(.return))'
+#   transition: win-or-linux
 
-# route based on OS
-- id: win-or-linux
-  type: switch
-  conditions:
-  - condition: jq(if .os == "windows" then true else false end)
-    transition: change-ip-win
-  - condition: jq(if .os == "linux" then true else false end)
-    transition: change-ip-linux
+# # route based on OS
+# - id: win-or-linux
+#   type: switch
+#   conditions:
+#   - condition: jq(if .os == "windows" then true else false end)
+#     transition: change-ip-win
+#   - condition: jq(if .os == "linux" then true else false end)
+#     transition: change-ip-linux
 
 
-- id: change-ip-linux
-  type: action
-  action:
-    function: linuxip
-    input:
-      old: jq(.ip)
-      new: jq(.new)
-      mask: 25
-      gateway: 10.54.61.1
+# - id: change-ip-linux
+#   type: action
+#   action:
+#     function: linuxip
+#     input:
+#       old: jq(.ip)
+#       new: jq(.new)
+#       mask: 25
+#       gateway: 10.54.61.1
 
-- id: change-ip-win
-  type: action
-  log: Windows VM jq(.name) IP change
-  action:
-    function: windowsip
-    input:
-      old: jq(.ip)
-      new: jq(.new)
+# - id: change-ip-win
+#   type: action
+#   log: Windows VM jq(.name) IP change
+#   action:
+#     function: windowsip
+#     input:
+#       old: jq(.ip)
+#       new: jq(.new)
 
 
 
