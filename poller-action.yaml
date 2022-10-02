@@ -37,7 +37,7 @@ states:
     if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
     elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
     else { "name": $f, "os": "windows" } end  )
-    #CHANGE!!!!
+#CHANGE!!!!
   
 # stop if OS is unknown
 - id: check-valid
