@@ -5,6 +5,24 @@ functions:
 
 states:
 
+- id: get-check-time
+  type: getter
+  variables:
+  - key: lastcheck
+    scope: workflow
+  transform:
+    # set time to 0 if it does not exist
+    time: jq(if (.var.lastcheck > 0) then .var.lastcheck else 0 end)
+  transition: set-check-time
+  
+# set save time for next run
+- id: set-check-time
+  type: setter
+  variables:
+  - key: lastcheck
+    scope: workflow
+    value: jq(now * 1000000000)
+
 # changes the IP from old to new
 # it fails automatically after 30 seconds 
 # because the connection is broken after changing the IP
@@ -27,6 +45,7 @@ states:
             Password: jq(.secrets.movepwd)
   transform:
     token: jq(.return.nutanix.Status.Token)
+    time: jq(.time)
   transition: fetch-events
 
 - id: fetch-events 
@@ -46,8 +65,14 @@ states:
           Filter:
             EventNames:
             - Initiate Cutover
+            EventStatus:
+            - Completed
           PaginationCriteria:
             PageNumber: 1
             RecordsPerPage: 100
+    transform:  
+      events: jq(.return.nutanix.Events)
+      time: jq(.time)
  
 
+# .return.nutanix.Events.[] | select(.EndTime > 166396186044132100)
