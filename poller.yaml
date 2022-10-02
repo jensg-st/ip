@@ -17,11 +17,11 @@ states:
     input: 
       auth:
         host: https://10.32.160.40
-        password: jq(.secrets.movepwd)
-        username: nutanix
         skipVerify: true
       api:
         path: "/move/v2/users/login"
         method: POST
-        data:
-        
+        data: 
+          Spec:
+            UserName: nutanix
+            Password: jq(.secrets.movepwd)
