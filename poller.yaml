@@ -72,7 +72,7 @@ states:
             PageNumber: 1
             RecordsPerPage: 100
   transform:  
-    events: jq(.return.nutanix.Events)
+    events: .return.nutanix.Events.[] | select(.EndTime > .time)
     time: jq(.time)
  
 
