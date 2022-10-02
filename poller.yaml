@@ -35,7 +35,7 @@ states:
   log: fetching move token
   action:
     function: nutanix
-    secrets: ["movepwd"]
+    secrets: ["nutanixpwd"]
     input: 
       auth:
         host: https://10.54.61.37
