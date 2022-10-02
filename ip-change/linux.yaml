@@ -41,7 +41,7 @@ states:
       host:
         name: jq(.old)
       auth:
-        username: direktiv
+        username: test
         password: jq(.secrets.sshpwd)
       commands:
       - command: nmcli connection show | tail -1 | awk '"'"'{print $4}'"'"'"" 
