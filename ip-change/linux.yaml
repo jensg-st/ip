@@ -21,7 +21,7 @@ states:
         title: New IP
       mask: 
         type: string
-        title: Network Mask
+        title: Prefix
       gateway: 
         type: string
         title: Default Gateway
@@ -44,7 +44,7 @@ states:
         username: test
         password: jq(.secrets.sshpwd)
       commands:
-      - command: nmcli connection show | tail -1 | awk '"'"'{print $4}'"'"'"" 
+      - command: nmcli connection show | tail -1 | awk '"'"'{print $2}'"'"'"" 
   transform:
     uuid: jq(.return.ssh[0].result)
     new: jq(.new)
