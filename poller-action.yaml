@@ -45,7 +45,7 @@ states:
   log: 'check for os: jq(.os)'
   conditions:
   - condition: jq(if .os == "unknown" then true else false end)
-  defaultTransition: get-ip
+  defaultTransition: wait
 
 - id: wait
   type: delay
