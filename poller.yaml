@@ -1,0 +1,25 @@
+functions:
+- id: nutanix
+  image: gerke74/nutanix
+  type: knative-workflow
+
+states:
+
+# changes the IP from old to new
+# it fails automatically after 30 seconds 
+# because the connection is broken after changing the IP
+- id: token 
+  type: action
+  log: fetching move token
+  action:
+    function: nutanix
+    secrets: ["movepwd"]
+    input: 
+      auth:
+        host: https://10.32.160.40
+        password: jq(.secrets.movepwd)
+        username: nutanix
+        skipVerify: true
+      api:
+        path: "/move/v2/users/login"
+        method: POST
