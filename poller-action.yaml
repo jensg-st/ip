@@ -91,7 +91,7 @@ states:
 
 
 - id: change-ip-linux
-  type: noop
+  type: action
   action:
     function: linuxip
     input:
@@ -99,6 +99,7 @@ states:
       new: jq(.new)
       mask: 255.255.255.0
       gateway: 10.32.130.1
+      
 - id: change-ip-win
   type: action
   log: Windows VM jq(.name) IP change
