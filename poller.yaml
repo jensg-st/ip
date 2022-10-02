@@ -44,10 +44,13 @@ states:
         path: "/move/v2/users/login"
         method: POST
         body: 
-          Spec:array: 'jq([.names[] | {name: .}])'
-  action:
-    function: myfunc
-    input: 'jq(.x)'
+          Spec:
+            UserName: nutanix
+            Password: jq(.secrets.movepwd)
+  transform:
+    token: jq(.return.nutanix.Status.Token)
+    time: jq(.time)
+  transition: fetch-events
 
   transition: fetch-events
 
