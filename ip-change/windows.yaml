@@ -27,7 +27,7 @@ states:
 # because the connection is broken after changing the IP
 - id: change 
   type: action
-  timeout: PT15S
+  timeout: PT1M
   action:
     function: powershell
     files:
@@ -37,7 +37,7 @@ states:
     input: 
       commands:
       # command requires username and password as args
-      - command: pwsh ip.ps1 Administrator jq(.secrets.windowspwd) jq(.old) jq(.new)
+      - command: pwsh ip.ps1 Test jq(.secrets.windowspwd) jq(.old) jq(.new)
   catch: 
   - error: "*"
     transition: check-ip

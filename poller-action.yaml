@@ -25,7 +25,7 @@ states:
       name:
         type: string
         title: VM name
-  transition: get-ip
+  transition: print
 
 # check by naming convention what OS it is
 - id: print
@@ -68,6 +68,7 @@ states:
   transform:
     ip: 'jq(.return.nutanix.entities[0].spec.resources.nic_list[0].ip_endpoint_list[0].ip)'
     name: jq(.name)
+    os: jq(.os)
   transition: fetch-ip
 
 # get new IP from list
