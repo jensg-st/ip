@@ -45,8 +45,8 @@ states:
         method: POST
         body: 
           Spec:
-            UserName: nutanix
-            Password: jq(.secrets.movepwd)
+            UserName: admin
+            Password: jq(.secrets.nutanixpwd)
   transform:
     token: jq(.return.nutanix.Status.Token)
     time: jq(.time)
@@ -78,12 +78,12 @@ states:
     # get vms after our last check but only names in an array
     events: jq(.time as $filter | [ .return.nutanix.Events.[] | select(.EndTime > $filter) | .VmName ])
     time: jq(.time)
-  transition: ip-iterate
+#   transition: ip-iterate
 
-- id: ip-iterate
-  type: foreach
-  array: 'jq([.events[] | {name: .}])'
-  action:
-    function: action
-    input: jq(.)
+# - id: ip-iterate
+#   type: foreach
+#   array: 'jq([.events[] | {name: .}])'
+#   action:
+#     function: action
+#     input: jq(.)
 
