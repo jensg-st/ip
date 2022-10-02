@@ -22,7 +22,7 @@ function Set-IP
 
     Set-NetIPInterface -InterfaceAlias $alias -Dhcp Disabled
     Remove-NetIPAddress -InterfaceAlias $alias-Confirm:$false
-    New-NetIPAddress -InterfaceAlias $alias -IPAddress $args[0] -PrefixLength 24 
+    New-NetIPAddress -InterfaceAlias $alias -IPAddress $args[0] -AddressFamily IPv4 -PrefixLength 24 
     
 }
 
