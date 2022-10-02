@@ -72,7 +72,8 @@ states:
             PageNumber: 1
             RecordsPerPage: 100
   transform:  
-    events: jq([ .return.nutanix.Events.[] | select(.EndTime > .time) | .VmName) ])
+    # get vms after our last check but only names in an array
+    events: jq([ .return.nutanix.Events.[] | select(.EndTime > .time) | .VmName ])
     time: jq(.time)
  
 
