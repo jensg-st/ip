@@ -94,7 +94,7 @@ states:
     input:
       old: jq(.ip)
       new: jq(.new)
-      mask: 25
+      mask: "25"
       gateway: 10.54.61.1
 
 - id: change-ip-win
