@@ -4,7 +4,7 @@ functions:
   type: knative-workflow
 - id: action
   type: subflow
-  workflow: action
+  workflow: poller-action
 
 states:
 
@@ -77,7 +77,6 @@ states:
     # get vms after our last check but only names in an array
     events: jq(.time as $filter | [ .return.nutanix.Events.[] | select(.EndTime > $filter) | .VmName ])
     time: jq(.time)
-
   transition: ip-iterate
 
 - id: ip-iterate
