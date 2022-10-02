@@ -50,7 +50,7 @@ states:
     new: jq(.new)
     old: jq(.old)
     mask: jq(.mask)
-  transition: change
+  # transition: change
   catch: 
   - error: "*"
     transition: failed
@@ -77,7 +77,7 @@ states:
       host:
         name: jq(.old)
       auth:
-        username: direktiv
+        username: test
         password: jq(.secrets.sshpwd)
       commands:
       - command: nmcli connection modify jq(.uuid) IPv4.address jq(.new)/jq(.mask)
