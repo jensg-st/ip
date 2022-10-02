@@ -22,6 +22,7 @@ states:
   - key: lastcheck
     scope: workflow
     value: jq(now * 1000000000)
+  transition: token
 
 # changes the IP from old to new
 # it fails automatically after 30 seconds 
