@@ -1,6 +1,6 @@
 functions:
 - id: nutanix
-  image: gerke74/nutanix
+  image: gcr.io/direktiv/functions/nutanix:1.0
   type: knative-workflow
 
 states:
@@ -21,7 +21,33 @@ states:
       api:
         path: "/move/v2/users/login"
         method: POST
-        data: 
+        body: 
           Spec:
             UserName: nutanix
             Password: jq(.secrets.movepwd)
+  transform:
+    token: jq(.return.nutanix.Status.Token)
+  transition: fetch-events
+
+- id: fetch-events 
+  type: action
+  log: fetching move events with token jq(.token)
+  action:
+    function: nutanix
+    input: 
+      auth:
+        host: https://10.32.160.40
+        skipVerify: true
+        token: jq(.token)
+      api:
+        path: "/move/v2/events"
+        method: POST
+        body: 
+          Filter:
+            EventNames:
+            - Initiate Cutover
+          PaginationCriteria:
+            PageNumber: 1
+            RecordsPerPage: 100
+ 
+
