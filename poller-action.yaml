@@ -36,7 +36,7 @@ check by naming convention what OS it is
     jq(.name as $f | .name | 
     if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
     elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
-    else { "name": $f, "os": "unkown" }   end  )
+    else { "name": $f, "os": "unkown" } end  )
   
 # stop if OS is unknown
 - id: check-valid
@@ -51,7 +51,7 @@ check by naming convention what OS it is
   type: action
   log: getting ip for vm jq(.name)
   action:
-    function: nutanix
+    function: nutanixv
     secrets: ["nutanixpwd", "nutanixsvr", "nutanixusr"]
     input: 
       auth:
@@ -87,13 +87,18 @@ check by naming convention what OS it is
     transition: change-ip-linux
 
 
-- id: change-ip-win
-  type: noop
-  log: Windows VM jq(.name) IP change
-
 - id: change-ip-linux
   type: noop
   log: Linux VM jq(.name) IP change
+
+- id: change-ip-win
+  type: action
+  log: Windows VM jq(.name) IP change
+  action:
+    function: windowsip
+    input:
+      old: jq(.ip)
+      new: jq(.new)
 
 
 
