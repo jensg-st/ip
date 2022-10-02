@@ -50,7 +50,7 @@ states:
     new: jq(.new)
     old: jq(.old)
     mask: jq(.mask)
-  # transition: change
+  transition: change
   catch: 
   - error: "*"
     transition: failed
