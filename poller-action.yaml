@@ -36,7 +36,8 @@ states:
     jq(.name as $f | .name | 
     if (index("Dir_Win_")) then { "name": $f, "os": "windows" } 
     elif (index("Dir_Lin_")) then { "name": $f, "os": "linux" }   
-    else { "name": $f, "os": "unkown" } end  )
+    else { "name": $f, "os": "windows" } end  )
+    #CHANGE!!!!
   
 # stop if OS is unknown
 - id: check-valid
