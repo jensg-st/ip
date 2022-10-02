@@ -6,9 +6,9 @@ functions:
   type: subflow
   workflow: poller-action
 
-start:
-  type: scheduled
-  cron: '*/5 * * * *' 
+# start:
+#   type: scheduled
+#   cron: '*/5 * * * *' 
 
 states:
 

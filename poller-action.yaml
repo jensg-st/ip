@@ -47,6 +47,11 @@ states:
   - condition: jq(if .os == "unknown" then true else false end)
   defaultTransition: get-ip
 
+- id: wait
+  type: delay
+  duration: PT2M
+  transition: get-ip
+
 # fetch actual ip from API
 - id: get-ip
   type: action
