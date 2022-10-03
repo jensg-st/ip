@@ -1,25 +1,26 @@
 function Set-IP
 {
 
-    $ip = (Get-NetIPAddress -AddressFamily IPv4 | 
-    Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
-    Where-Object InterfaceAlias -NotLike "*Loopback*" |
-    Select-Object IPV4Address).IPV4Address
+    # $ip = (Get-NetIPAddress -AddressFamily IPv4 | 
+    # Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
+    # Where-Object InterfaceAlias -NotLike "*Loopback*" |
+    # Select-Object IPV4Address).IPV4Address
 
-    $prefix = (Get-NetIPAddress -AddressFamily IPv4 | 
-    Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
-    Where-Object InterfaceAlias -NotLike "*Loopback*" |
-    Select-Object PrefixLength).PrefixLength
+    # $prefix = (Get-NetIPAddress -AddressFamily IPv4 | 
+    # Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
+    # Where-Object InterfaceAlias -NotLike "*Loopback*" |
+    # Select-Object PrefixLength).PrefixLength
 
-    $alias = (Get-NetIPAddress -AddressFamily IPv4 | 
-    Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
-    Where-Object InterfaceAlias -NotLike "*Loopback*" |
-    Select-Object InterfaceAlias).InterfaceAlias
+    # $alias = (Get-NetIPAddress -AddressFamily IPv4 | 
+    # Where-Object { $_.PrefixOrigin -eq "Dhcp" } |
+    # Where-Object InterfaceAlias -NotLike "*Loopback*" |
+    # Select-Object InterfaceAlias).InterfaceAlias
 
-    Write-Output "changing $alias $ip/$prefix"
-    [Console]::Out.Flush() 
+    # Write-Output "changing $alias $ip/$prefix"
+    # [Console]::Out.Flush() 
 
-
+    $alias = "Ethernet 2"
+    
     Set-NetIPInterface -InterfaceAlias $alias -Dhcp Disabled
     Remove-NetIPAddress -InterfaceAlias $alias -Confirm:$false
     New-NetIPAddress -InterfaceAlias $alias -IPAddress $args[0] -AddressFamily IPv4 -DefaultGateway $args[1] -PrefixLength $args[2]
