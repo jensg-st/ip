@@ -69,7 +69,8 @@ states:
         path: /PrismGateway/services/rest/v2.0/vms/?filter=vm_name%3D%3Djq(.name)&include_vm_nic_config=true
         method: GET
   transform:
-    ip: 'jq(.return.nutanix.entities[0].vm_nics[0].ip_address)'
+    #ip: 'jq(.return.nutanix.entities[0].vm_nics[0].ip_address)'
+    ip: 'jq(.return.nutanix.entities[0].vm_nics[0]..ip_addresses.[] | select(. | startswith("10.54")))'
     name: jq(.name)
     os: jq(.os)
   transition: fetch-ip
